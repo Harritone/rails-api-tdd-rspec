@@ -7,6 +7,7 @@ gem 'rails', '~> 6.0.3'
 gem 'sqlite3', '~> 1.4'
 gem 'puma', '~> 4.1'
 gem 'bootsnap', '>= 1.4.2', require: false
+gem 'jsonapi-serializer'
 
 
 group :development, :test do
