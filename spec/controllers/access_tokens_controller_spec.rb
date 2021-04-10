@@ -4,7 +4,7 @@ RSpec.describe AccessTokensController do
   describe "#create" do 
 
     shared_examples_for "unauthorized_requests" do
-      let(:error) do
+      let(:authentication_error) do
         {
           "status": "401",
           "source": {"pointer": "/data/attributes/code"},
@@ -20,7 +20,7 @@ RSpec.describe AccessTokensController do
       
       it 'should return propper error body' do
         subject
-        expect(json[:errors]).to include(error)
+        expect(json[:errors]).to include(authentication_error)
       end
     end
     
@@ -80,6 +80,34 @@ RSpec.describe AccessTokensController do
         )
       end
     end
-    
+  end
+
+  describe "DELETE #destroy" do
+    context "when invalid request" do
+      let(:authorization_error) do
+        {
+          "status": "403",
+          "source": {"pointer": "/headers/authorization"},
+          "title": "Not authorized",
+          "detail": "You have no right to access this resource"
+        }
+      end
+
+      subject{ delete :destroy }
+
+      it 'should return 403 status code' do 
+        subject
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it 'should return proper error json' do
+        subject
+        expect(json[:errors].first).to eq(authorization_error)
+      end
+    end
+
+    context "when valid request" do
+      
+    end
   end
 end
