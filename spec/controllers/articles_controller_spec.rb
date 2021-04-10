@@ -131,8 +131,40 @@ RSpec.describe ArticlesController do
         end
       end
 
-      context "when success request sent" do
-        
+       context "when success request sent" do
+        let(:user) { create :user }
+        let(:access_token) { user.create_access_token }
+        before { request.headers["authorization"] = "Bearer #{access_token.token}" }
+
+        let(:valid_attributes) do
+          {
+            "data": {
+              "attributes": {
+                "title": "Awesome article",
+                "content": "Super content",
+                "slug": "awesome-article",
+              },
+            },
+          }
+        end
+
+        subject { post :create, params: valid_attributes }
+
+        it "should have 201 status code" do
+          subject
+          expect(response).to have_http_status(:created)
+        end
+
+        it "should have proper json body" do
+          subject
+          expect(json_data[:attributes]).to include(
+            valid_attributes[:data][:attributes]
+          )
+        end
+
+        it "should create the article" do
+          expect { subject }.to change { Article.count }.by(1)
+        end
       end
     end
   end

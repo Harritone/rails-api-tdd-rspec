@@ -25,9 +25,9 @@ class ArticlesController < ApplicationController
   private
 
   def article_params
-     params.require(:data).require(:attributes).
+    params.require(:data).require(:attributes).
       permit(:title, :content, :slug) ||
-    ActionController::Parameters.new
+      ActionController::Parameters.new
   end
 
 end
