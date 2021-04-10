@@ -8,6 +8,7 @@ gem 'sqlite3', '~> 1.4'
 gem 'puma', '~> 4.1'
 gem 'bootsnap', '>= 1.4.2', require: false
 gem 'jsonapi-serializer'
+gem 'jsonapi_errors_handler'
 gem 'jsom-pagination'
 gem 'octokit', "~> 4.0"
 
