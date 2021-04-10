@@ -49,6 +49,91 @@ RSpec.describe ArticlesController do
         )
       
     end
-    
+  end
+
+  describe '#show' do
+    let(:article) { create :article }
+    subject { get :show, params: { id: article.id } }
+
+    before { subject }
+
+    it 'should return success response' do
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'should return proper json' do
+      aggregate_failures do
+        expect(json_data[:id]).to eq(article.id.to_s)
+        expect(json_data[:type]).to eq('article')
+        expect(json_data[:attributes]).to eq({
+            "title": article.title,
+            "content": article.content,
+            "slug": article.slug
+        })
+      end
+    end
+  end
+
+  describe "#create" do
+    subject { post :create }
+    context 'when no code provided' do
+      it_behaves_like 'forbidden_request'
+    end
+
+    context 'when invalid code provided' do
+      before { request.headers['authorization'] = 'Invalid token' }
+      it_behaves_like 'forbidden_request'
+    end
+
+    context "when authorized" do
+      let(:user) { create :user }
+      let(:access_token) { user.create_access_token }
+      before { request.headers["authorization"] = "Bearer #{access_token.token}" }
+      context "when invalid parameters provided" do
+        let(:invalid_attributes) do
+          {
+            "data" => {
+              "attributes" => {
+                "title" => "",
+                "content" => "",
+              },
+            },
+          }
+        end
+        subject { post :create, params: invalid_attributes }
+        it "should return 422 status code" do
+          subject
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it "should return proper error json" do
+          subject
+          expect(json[:errors]).to include(
+            {
+              "source": { "pointer": "/data/attributes/title" },
+              "detail": "can't be blank",
+              "status": 422,
+              "title": "Invalid request",
+            },
+            {
+              "source": { "pointer": "/data/attributes/content" },
+              "detail": "can't be blank",
+              "status": 422,
+              "title": "Invalid request",
+            },
+            {
+              "source": { "pointer": "/data/attributes/slug" },
+              "detail": "can't be blank",
+              "status": 422,
+              "title": "Invalid request",
+            }
+          )
+        end
+      end
+
+      context "when success request sent" do
+        
+      end
+    end
   end
 end
