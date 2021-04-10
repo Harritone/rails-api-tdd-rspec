@@ -1,9 +1,27 @@
 class ApplicationController < ActionController::API
-  class AuthorizationError<StandardError; end
+
+  class AuthorizationError < StandardError; end
+
   rescue_from UserAuthenticator::AuthenticationError, with: :authenication_error
   rescue_from AuthorizationError, with: :authorization_error
 
+  before_action :authorize!
+
   private
+
+  def authorize!
+    raise AuthorizationError unless current_user
+  end
+
+  def acces_token
+    provided_token = request.authorization&.gsub(/\ABearer\s/, '')
+    @access_token = AccessToken.find_by(token: provided_token)
+  end
+
+  def current_user
+    @current_user = acces_token&.user
+  end
+
   def authenication_error
     error = {
       "status"=> "401",
