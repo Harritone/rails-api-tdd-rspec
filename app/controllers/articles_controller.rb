@@ -18,6 +18,12 @@ class ArticlesController < ApplicationController
     render json: serializer.new(article), status: :created
   end
 
+  def update
+    article = Article.find(params[:id])
+    article.update!(article_params)
+    render json: serializer.new(article), status: :ok
+  end
+
   def serializer
     ArticleSerializer
   end
