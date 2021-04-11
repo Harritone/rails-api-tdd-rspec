@@ -26,6 +26,14 @@ class ArticlesController < ApplicationController
     raise JsonapiErrorsHandler::Errors::Forbidden
   end
 
+  def destroy
+    article = current_user.articles.find(params[:id])
+    article.destroy!
+    head :no_content
+  rescue ActiveRecord::RecordNotFound
+    raise JsonapiErrorsHandler::Errors::Forbidden
+  end
+
   def serializer
     ArticleSerializer
   end
