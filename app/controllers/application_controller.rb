@@ -4,8 +4,12 @@ class ApplicationController < ActionController::API
   ErrorMapper.map_errors!(
     'ActiveRecord::RecordNotFound' =>
       'JsonapiErrorsHandler::Errors::NotFound',
-      "ActiveRecord::ActiveRecord::RecordInvalid" => "JsonapiErrorsHandler::Errors::Invalid"
+    "ActiveRecord::ActiveRecord::RecordInvalid" =>
+      "JsonapiErrorsHandler::Errors::Invalid",
+    "ApplicationController::AuthorizationError" => 
+      "JsonapiErrorsHandler::Errors::Forbidden",
   )
+
   rescue_from ::StandardError, with: lambda { |e| handle_error(e) }
   rescue_from ActiveRecord::RecordInvalid, with: lambda { |e| handle_validation_error(e) }
 
@@ -31,7 +35,7 @@ class ApplicationController < ActionController::API
   class AuthorizationError < StandardError; end
 
   rescue_from UserAuthenticator::AuthenticationError, with: :authenication_error
-  rescue_from AuthorizationError, with: :authorization_error
+  # rescue_from AuthorizationError, with: :authorization_error
 
   before_action :authorize!
 
@@ -60,14 +64,14 @@ class ApplicationController < ActionController::API
     render json: {"errors": [error]}, status: 401
   end
 
-  def authorization_error
-    error = {
-      "status"=> "403",
-      "source"=> {"pointer"=> "/headers/authorization"},
-      "title"=> "Not authorized",
-      "detail"=> "You have no right to access this resource"
-    }
-    render json: {"errors": [error]}, status: 403
-  end
+  # def authorization_error
+  #   error = {
+  #     "status"=> "403",
+  #     "source"=> {"pointer"=> "/headers/authorization"},
+  #     "title"=> "Not authorized",
+  #     "detail"=> "You have no right to access this resource"
+  #   }
+  #   render json: {"errors": [error]}, status: 403
+  # end
 
 end

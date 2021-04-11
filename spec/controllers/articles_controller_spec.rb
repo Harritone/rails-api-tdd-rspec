@@ -170,8 +170,10 @@ RSpec.describe ArticlesController do
   end
 
   describe '#update' do
+    let(:user) { create :user }
+    let(:article) { create :article, user: user }
+    let(:access_token) { user.create_access_token }
 
-    let(:article) { create :article }
     subject { patch :update, params: {id: article.id} }
 
     context 'when no code provided' do
@@ -182,10 +184,20 @@ RSpec.describe ArticlesController do
       before { request.headers['authorization'] = 'Invalid token' }
       it_behaves_like 'forbidden_request'
     end
+    
+    context "when trying to update not owned article" do
+      let(:other_user) { create :user }
+      let(:other_article) { create :article, user: other_user }
+
+      subject { patch :update, params: { id: other_article.id } } 
+      before { request.headers["authorization"] = "Bearer #{access_token.token}" }
+
+      it_behaves_like 'forbidden_request'
+    end
 
     context "when authorized" do
-      let(:user) { create :user }
-      let(:access_token) { user.create_access_token }
+      # let(:user) { create :user }
+      # let(:access_token) { user.create_access_token }
       before { request.headers["authorization"] = "Bearer #{access_token.token}" }
       context "when invalid parameters provided" do
         let(:invalid_attributes) do
@@ -228,8 +240,8 @@ RSpec.describe ArticlesController do
       end
 
        context "when success request sent" do
-        let(:user) { create :user }
-        let(:access_token) { user.create_access_token }
+        # let(:user) { create :user }
+        # let(:access_token) { user.create_access_token }
         before { request.headers["authorization"] = "Bearer #{access_token.token}" }
 
         let(:valid_attributes) do

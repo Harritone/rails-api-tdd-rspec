@@ -23,10 +23,10 @@ end
 shared_examples_for 'forbidden_request' do
   let(:authorization_error) do
     {
-      "status": "403",
-      "source": {"pointer": "/headers/authorization"},
-      "title": "Not authorized",
-      "detail": "You have no right to access this resource"
+      "status": 403,
+      "source": {"pointer": "/request/headers/authorization"},
+      "title": "Forbidden request",
+      "detail": "You have no rights to access this resource"
     }
   end
 
