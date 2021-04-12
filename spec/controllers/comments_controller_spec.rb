@@ -17,6 +17,14 @@ RSpec.describe CommentsController, type: :controller do
       expect(json_data.length).to eq(1)
       expect(json_data.first[:id]).to eq(comment.id.to_s)
     end
+
+    it "should paginate results" do
+      comments = create_list :comment, 3, article: article
+      get :index, params: { article_id: article.id, page: { number: 2, size: 1 } }
+      expect(json_data.length).to eq(1)
+      expect(json_data.first[:id]).to eq(comments.second.id.to_s)
+    end
+
   end
   
   describe "POST /create" do

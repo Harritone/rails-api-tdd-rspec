@@ -2,11 +2,15 @@ class CommentsController < ApplicationController
   skip_before_action :authorize!, only: [:index]
   before_action :load_article
 
+  include Paginable
+
   # GET /comments
   def index
-    comments = @article.comments
-
-    render json: serializer.new(comments)
+    paginated = paginate(@article.comments)
+    render_collection(paginated)
+    
+    # comments = @article.comments
+    # render json: serializer.new(comments)
   end
 
   # POST /comments
