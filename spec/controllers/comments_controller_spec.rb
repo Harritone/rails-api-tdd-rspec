@@ -25,6 +25,15 @@ RSpec.describe CommentsController, type: :controller do
       expect(json_data.first[:id]).to eq(comments.second.id.to_s)
     end
 
+    it 'should have proper json' do
+      comment = create :comment, article: article
+      subject 
+      expect(json_data.first[:attributes]).to eq(
+        {
+          content: comment.content
+        }
+      )
+    end
   end
   
   describe "POST /create" do
