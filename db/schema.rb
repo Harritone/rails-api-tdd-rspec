@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_11_053448) do
+ActiveRecord::Schema.define(version: 2021_04_13_111126) do
 
   create_table "access_tokens", force: :cascade do |t|
     t.string "token", null: false
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 2021_04_11_053448) do
     t.string "provider"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "encrypted_password"
   end
 
   add_foreign_key "access_tokens", "users"

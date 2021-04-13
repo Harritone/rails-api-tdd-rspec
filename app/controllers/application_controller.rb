@@ -34,7 +34,8 @@ class ApplicationController < ActionController::API
 
   class AuthorizationError < StandardError; end
 
-  rescue_from UserAuthenticator::AuthenticationError, with: :authenication_error
+  rescue_from UserAuthenticator::Oauth::AuthenticationError, with: :authenication_oauth_error
+  rescue_from UserAuthenticator::Standard::AuthenticationError, with: :authenication_standard_error
   # rescue_from AuthorizationError, with: :authorization_error
 
   before_action :authorize!
@@ -54,12 +55,22 @@ class ApplicationController < ActionController::API
     @current_user = acces_token&.user
   end
 
-  def authenication_error
+  def authenication_oauth_error
     error = {
       "status"=> "401",
       "source"=> {"pointer"=> "/data/attributes/code"},
       "title"=> "Authentication code is invalid",
       "detail"=> "You must provide valid code in order to exchange it for token"
+    }
+    render json: {"errors": [error]}, status: 401
+  end
+
+  def authenication_standard_error
+    error = {
+      "status"=> "401",
+      "source"=> {"pointer"=> "/data/attributes/password"},
+      "title"=> "Invalid login or password",
+      "detail"=> "You must provide valid credentials in order to exchange them for token"
     }
     render json: {"errors": [error]}, status: 401
   end

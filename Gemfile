@@ -11,6 +11,7 @@ gem 'jsonapi-serializer'
 gem 'jsonapi_errors_handler'
 gem 'jsom-pagination'
 gem 'octokit', "~> 4.0"
+gem 'bcrypt'
 
 
 group :development, :test do
